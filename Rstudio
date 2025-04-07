@@ -1,6 +1,8 @@
 #Integración del Scrip del Módulo 2 y 3
 #1 Cargar datos 
-dir.create("datos, showWaenings = False")
+if (!file.exists("datos")) {
+  dir.create("datos", showWarnings = FALSE)
+}
 
 #cargar la libreria 
 library(readr)
