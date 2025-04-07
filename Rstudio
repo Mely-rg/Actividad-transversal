@@ -1,0 +1,75 @@
+#Integración del Scrip del Módulo 2 y 3
+#1 Cargar datos 
+dir.create("datos, showWaenings = False")
+
+#cargar la libreria 
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+datos <- read_csv("salarios_mujeres.csv")
+
+#Explorar los datos
+head(datos)
+str(datos)
+summary(datos)
+dim(datos)
+summary(datos)
+
+#2 Identificar y limpiar datos 
+sum(is.na(datos$Salario))
+datos[is.na(datos$Salario),]
+
+#convertir la columna Genero a factor 
+datos$Genero <- as.factor(datos$Genero)
+
+#Ver la distribución de Salarios con boxplot
+boxplot(datos$Salario, main = "Distribución de Salarios", horizontal = TRUE)
+
+#Limpiar los datos 
+datos_limpios <- datos[!is.na(datos$Salario), ]
+
+#Filtrar datos por género y edad
+mujeres <- datos_limpios[datos_limpios$Genero == "Mujer", ]
+mujeres_25_40 <- mujeres[mujeres$Edad >= 25 & mujeres$Edad <= 40, ]
+
+#3 Medidas de tendencia central 
+#Cargar la librería tidyverse para ggplot2
+library(tidyverse)
+
+#Cacular la media del salario
+media_salario <- mean(datos$Salario, na.rm = TRUE) # Corrección: datos$Salario
+mediana_salario <- median(datos$Salario, na.rm = TRUE)
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+moda_salario <- getmode(datos$Salario)
+
+# Mostrar las medidas de tendencia central para Salario
+cat("Media del salario:", media_salario, "\n")
+cat("Mediana del salario:", mediana_salario, "\n")
+cat("Moda del salario:", moda_salario, "\n")
+
+#medidas de tendencia central para Edad
+media_edad <- mean(datos$Edad, na.rm = TRUE) # Corrección: datos$Edad
+mediana_edad <- median(datos$Edad, na.rm = TRUE)
+moda_edad <- getmode(datos$Edad)
+
+#mostrar las medidas de tendencia central para Edad
+cat("Media de la edad:", media_edad, "\n")
+cat("Mediana de la edad:", mediana_edad, "\n")
+cat("Moda de la edad:", moda_edad, "\n")
+
+#Nueva columna para los datos NA del salario 
+datos <- datos %>%
+  mutate(Salario_categoria = ifelse(is.na(Salario), "NA", as.character(Salario)))
+
+#Histograma de la distribución de Salarios
+ggplot(datos, aes(x = Salario_categoria)) +
+  geom_bar(fill = "orange", color = "black") +
+  labs(title = "Distribución de Salarios (con NA", x = "Salario", y = "Frecuencia") +
+  theme_minimal()
+
+print("Análisis y visulización terminados")
+  xlim(min(datos$Salario), max(datos$Salario))
